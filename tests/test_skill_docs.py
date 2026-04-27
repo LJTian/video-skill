@@ -10,8 +10,10 @@ class SkillDocsTests(unittest.TestCase):
         self.assertIn("name: auto-highlight-video", text)
         self.assertRegex(text, r"description: .+高光|description: .+highlight")
         validate_index = text.index("validate_highlights.py")
+        boundary_index = text.index("review_clip_boundaries.py")
         export_index = text.index("export_clips.py")
         self.assertLess(validate_index, export_index)
+        self.assertLess(boundary_index, export_index)
 
     def test_skill_links_to_schema_reference(self):
         text = Path("SKILL.md").read_text(encoding="utf-8")
@@ -64,6 +66,20 @@ class SkillDocsTests(unittest.TestCase):
         verify_index = text.index("Verify exported media")
         quality_index = text.index("Review production quality")
         self.assertGreater(quality_index, verify_index)
+
+    def test_skill_requires_transcript_boundary_review_before_export(self):
+        text = Path("SKILL.md").read_text(encoding="utf-8")
+
+        for required in (
+            "review_clip_boundaries.py",
+            "transcript cue",
+            "sentence boundaries",
+        ):
+            self.assertIn(required, text)
+
+        boundary_index = text.index("Review clip boundaries")
+        export_index = text.index("Export clips")
+        self.assertLess(boundary_index, export_index)
 
 
 if __name__ == "__main__":

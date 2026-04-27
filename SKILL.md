@@ -62,9 +62,15 @@ Optional:
 5. Validate before export
    - Run `python3 scripts/validate_highlights.py <manifest.json>`.
    - Fix the JSON if validation fails.
-   - Do not run `scripts/export_clips.py` until validation passes.
+   - Do not run boundary review or export until validation passes.
 
-6. Export clips
+6. Review clip boundaries
+   - Run `python3 scripts/review_clip_boundaries.py <manifest.json> <transcript.vtt>` when a VTT transcript is available.
+   - Treat any reported start or end cut inside a transcript cue as a blocker for export, because it can clip sentence boundaries or leave the speaker unfinished.
+   - Adjust the manifest to a natural cue, sentence, or speaker boundary, then rerun the review.
+   - Do not run `scripts/export_clips.py` until validation and boundary review both pass.
+
+7. Export clips
    - Run a dry run first:
 
 ```bash
@@ -79,14 +85,14 @@ python3 scripts/export_clips.py input.mp4 highlights.json --output-dir highlight
 
    - Use `--reencode` when frame accuracy, broad playback compatibility, platform upload, or unusual source codecs such as VP9/Opus matter more than speed. For deliverable MP4 clips, prefer H.264 video plus AAC audio.
 
-7. Verify exported media
+8. Verify exported media
    - Read `references/output-verification.md`.
    - Confirm the output file count equals the manifest highlight count.
    - Use `ffprobe` to confirm every clip has expected duration plus video and audio streams.
    - Run a decode check such as `ffmpeg -v error -i highlight-clips/clip.mp4 -f null -`.
    - Do not treat "ffmpeg exited 0" as proof that the deliverable is usable.
 
-8. Review production quality
+9. Review production quality
    - Read `references/quality-review.md`.
    - Make or inspect a contact sheet when possible, and check visual consistency across clips.
    - Confirm the subtitle policy is consistent: all clips use clean subtitles, or none do, unless the user requested mixed output.
@@ -142,6 +148,7 @@ If cookies, tokens, browser profiles, auth headers, API keys, private keys, or e
 ## Script Notes
 
 - `scripts/validate_highlights.py` accepts a manifest path and checks required fields, score range, timecodes, duration bounds, duplicate IDs, and overlap.
+- `scripts/review_clip_boundaries.py` compares manifest cut points with VTT transcript cues and reports start or end cuts that land inside active speech.
 - `scripts/export_clips.py` reads a valid manifest and calls `ffmpeg` once per clip.
 - `scripts/clean_vtt.py` converts WebVTT captions to clean timestamped text lines for transcript review.
 - Default export uses stream copy for speed. Use `--reencode` for more accurate cuts or when stream copy produces playback issues.

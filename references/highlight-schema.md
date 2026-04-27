@@ -58,3 +58,5 @@ Use this JSON format for `auto-highlight-video` decisions. The manifest is the c
 - Prefer clips scoring 7 or higher for export.
 - Do not use precise timecodes from untimestamped transcripts.
 - Validate with `python3 scripts/validate_highlights.py <manifest.json>` before exporting.
+- When using VTT transcripts, review cut points with `python3 scripts/review_clip_boundaries.py <manifest.json> <transcript.vtt>` before exporting.
+- If boundary review says a cut lands inside a transcript cue, move it to a natural sentence or speaker boundary and rerun the review.

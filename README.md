@@ -32,6 +32,7 @@ contract between the AI decisions and clip export.
 |-- scripts/
 |   |-- clean_vtt.py
 |   |-- export_clips.py
+|   |-- review_clip_boundaries.py
 |   `-- validate_highlights.py
 `-- tests/
     |-- test_clean_vtt.py
@@ -87,6 +88,17 @@ python3 scripts/validate_highlights.py highlights.json
 
 The validator checks required fields, score range, timecodes, default duration
 bounds, duplicate IDs, and overlapping clips.
+
+## Review Clip Boundaries
+
+Check the manifest against the VTT transcript before exporting:
+
+```bash
+python3 scripts/review_clip_boundaries.py highlights.json captions.vtt
+```
+
+This catches start or end times that cut through an active transcript cue, which
+is a common cause of clips ending before a sentence is finished.
 
 ## Export Clips
 
