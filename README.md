@@ -4,18 +4,20 @@ Codex skill source for finding and exporting high-value clips from long videos,
 podcasts, lectures, interviews, webinars, and narrated recordings.
 
 The skill uses AI for editorial judgment and local Python scripts for
-deterministic validation and `ffmpeg` execution. A timestamped transcript is the
-primary input for highlight selection; a JSON manifest is the contract between
-the AI decisions and clip export.
+deterministic validation, caption cleanup, and `ffmpeg` execution. A timestamped
+transcript is the primary input for highlight selection; a JSON manifest is the
+contract between the AI decisions and clip export.
 
 ## What It Does
 
-- Guides Codex through inspecting a source video and timestamped transcript.
+- Guides Codex through acquiring a URL or inspecting a source video and timestamped transcript.
 - Selects standalone highlight candidates, usually 30-90 seconds each.
 - Scores each candidate and records the reason, risk, and edit notes.
 - Validates the highlight manifest before any clips are exported.
 - Exports clips with `ffmpeg`, using stream copy by default or re-encoding when
   frame accuracy matters.
+- Verifies exported media and gives guidance for subtitles, platform formats,
+  and credential safety.
 
 ## Repository Layout
 
@@ -23,11 +25,16 @@ the AI decisions and clip export.
 .
 |-- SKILL.md
 |-- references/
-|   `-- highlight-schema.md
+|   |-- highlight-schema.md
+|   |-- output-verification.md
+|   |-- platform-presets.md
+|   `-- source-acquisition.md
 |-- scripts/
+|   |-- clean_vtt.py
 |   |-- export_clips.py
 |   `-- validate_highlights.py
 `-- tests/
+    |-- test_clean_vtt.py
     |-- test_export_clips.py
     |-- test_skill_docs.py
     `-- test_validate_highlights.py
@@ -38,6 +45,7 @@ the AI decisions and clip export.
 - Python 3.10 or newer.
 - `ffmpeg` for exporting clips.
 - `ffprobe` is recommended for video inspection when the skill is used.
+- `yt-dlp` is recommended when the input is a public video URL.
 
 The Python scripts only use the standard library.
 
@@ -100,6 +108,14 @@ Use `--reencode` for more accurate cuts:
 python3 scripts/export_clips.py input.mp4 highlights.json --output-dir highlight-clips --reencode
 ```
 
+## Clean Downloaded Captions
+
+Clean WebVTT subtitles before editorial review:
+
+```bash
+python3 scripts/clean_vtt.py captions.vtt -o captions.clean.txt
+```
+
 ## Run Tests
 
 ```bash
@@ -115,6 +131,7 @@ for requests such as:
 - "Create highlight shorts from this lecture and transcript."
 - "Validate this highlight manifest and export the clips."
 
-Codex should follow `SKILL.md`: inspect the media, inspect the timestamped
-transcript, produce a structured manifest, validate it, run a dry export, and
-only then export clips.
+Codex should follow `SKILL.md`: acquire or inspect the media, inspect the
+timestamped transcript, produce a structured manifest, validate it, run a dry
+export, export clips, and verify the resulting media files before claiming the
+deliverable is complete.
