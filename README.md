@@ -1,5 +1,7 @@
 # Auto Highlight Video Skill
 
+**Language:** English | [简体中文](README.zh-CN.md)
+
 Codex skill source for finding and exporting high-value clips from long videos,
 podcasts, lectures, interviews, webinars, and narrated recordings.
 
@@ -147,3 +149,8 @@ Codex should follow `SKILL.md`: acquire or inspect the media, inspect the
 timestamped transcript, produce a structured manifest, validate it, run a dry
 export, export clips, and verify the resulting media files before claiming the
 deliverable is complete.
+
+## Language
+
+- English: `README.md`
+- Chinese (Simplified): [`README.zh-CN.md`](README.zh-CN.md)
