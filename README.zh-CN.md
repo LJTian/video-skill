@@ -16,6 +16,7 @@ JSON 清单是 AI 决策与片段导出之间的契约。
 - 为每个候选片段评分，并记录原因、风险和剪辑说明。
 - 在导出任何片段前校验高光清单。
 - 使用 `ffmpeg` 导出片段，默认采用流拷贝；当需要更精确切点时可重编码。
+- 渲染平台规格版本、生成视觉复核素材、导出合集视频，并生成可审阅发布文案资产。
 - 校验导出媒体，并提供字幕、平台格式和凭据安全方面的指引。
 
 ## 仓库结构
@@ -27,15 +28,24 @@ JSON 清单是 AI 决策与片段导出之间的契约。
 |   |-- highlight-schema.md
 |   |-- output-verification.md
 |   |-- platform-presets.md
+|   |-- quality-review.md
 |   `-- source-acquisition.md
 |-- scripts/
+|   |-- analyze_visual_signals.py
 |   |-- clean_vtt.py
+|   |-- export_compilation.py
 |   |-- export_clips.py
+|   |-- generate_publish_assets.py
+|   |-- render_platform_clips.py
 |   |-- review_clip_boundaries.py
 |   `-- validate_highlights.py
 `-- tests/
+    |-- test_analyze_visual_signals.py
     |-- test_clean_vtt.py
+    |-- test_export_compilation.py
     |-- test_export_clips.py
+    |-- test_generate_publish_assets.py
+    |-- test_render_platform_clips.py
     |-- test_skill_docs.py
     `-- test_validate_highlights.py
 ```
@@ -115,6 +125,32 @@ python3 scripts/export_clips.py input.mp4 highlights.json --output-dir highlight
 
 ```bash
 python3 scripts/export_clips.py input.mp4 highlights.json --output-dir highlight-clips --reencode
+```
+
+## 二期包装输出
+
+基础片段导出并复核后，可以渲染平台规格版本：
+
+```bash
+python3 scripts/render_platform_clips.py highlights.json --input-dir highlight-clips --output-dir platform-clips --aspect vertical --dry-run
+```
+
+生成视觉复核命令和 JSON 报告：
+
+```bash
+python3 scripts/analyze_visual_signals.py input.mp4 highlights.json --dry-run --json
+```
+
+预览合集视频导出：
+
+```bash
+python3 scripts/export_compilation.py highlights.json --input-dir highlight-clips --output highlight-compilation.mp4 --dry-run
+```
+
+生成可审阅的发布文案资产：
+
+```bash
+python3 scripts/generate_publish_assets.py highlights.json --platform Shorts --audience "target viewers"
 ```
 
 ## 清理下载字幕

@@ -81,6 +81,17 @@ class SkillDocsTests(unittest.TestCase):
         export_index = text.index("Export clips")
         self.assertLess(boundary_index, export_index)
 
+    def test_skill_documents_phase2_scripts(self):
+        text = Path("SKILL.md").read_text(encoding="utf-8")
+
+        for required in (
+            "render_platform_clips.py",
+            "analyze_visual_signals.py",
+            "export_compilation.py",
+            "generate_publish_assets.py",
+        ):
+            self.assertIn(required, text)
+
 
 if __name__ == "__main__":
     unittest.main()

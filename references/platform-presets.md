@@ -19,6 +19,18 @@ Clarify production requirements when they affect export choices:
 - Vertical short video: reframe or crop deliberately; do not blindly center-crop if slides, faces, or screen recordings matter.
 - Burned subtitles: use cleaned timestamped captions and verify text does not cover key visuals.
 
+## Local Rendering
+
+Use `scripts/render_platform_clips.py` after the base clips are exported and reviewed. Start with `--dry-run` so the generated `ffmpeg` commands can be inspected before writing files.
+
+Supported aspect presets:
+
+- `vertical` or `9:16`: 1080x1920.
+- `square` or `1:1`: 1080x1080.
+- `landscape` or `16:9`: 1920x1080.
+
+The renderer always re-encodes to H.264 video plus AAC audio for upload compatibility. If `--subtitles` is provided, subtitles are burned into every rendered clip.
+
 ## Editorial Metadata
 
 For each exported clip, consider producing:
@@ -29,3 +41,5 @@ For each exported clip, consider producing:
 - Hashtag suggestions only when the user wants public social publishing.
 
 Keep metadata separate from the highlight manifest unless it directly affects the cut.
+
+Use `scripts/generate_publish_assets.py` to create reviewable titles, descriptions, captions, hashtags, cover suggestions, and manual review items. The script does not upload, schedule, or call platform APIs.

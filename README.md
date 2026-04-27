@@ -18,6 +18,8 @@ contract between the AI decisions and clip export.
 - Validates the highlight manifest before any clips are exported.
 - Exports clips with `ffmpeg`, using stream copy by default or re-encoding when
   frame accuracy matters.
+- Renders platform-ready variants, visual review artifacts, compilation videos,
+  and reviewable publishing metadata.
 - Verifies exported media and gives guidance for subtitles, platform formats,
   and credential safety.
 
@@ -30,15 +32,24 @@ contract between the AI decisions and clip export.
 |   |-- highlight-schema.md
 |   |-- output-verification.md
 |   |-- platform-presets.md
+|   |-- quality-review.md
 |   `-- source-acquisition.md
 |-- scripts/
+|   |-- analyze_visual_signals.py
 |   |-- clean_vtt.py
+|   |-- export_compilation.py
 |   |-- export_clips.py
+|   |-- generate_publish_assets.py
+|   |-- render_platform_clips.py
 |   |-- review_clip_boundaries.py
 |   `-- validate_highlights.py
 `-- tests/
+    |-- test_analyze_visual_signals.py
     |-- test_clean_vtt.py
+    |-- test_export_compilation.py
     |-- test_export_clips.py
+    |-- test_generate_publish_assets.py
+    |-- test_render_platform_clips.py
     |-- test_skill_docs.py
     `-- test_validate_highlights.py
 ```
@@ -120,6 +131,32 @@ Use `--reencode` for more accurate cuts:
 
 ```bash
 python3 scripts/export_clips.py input.mp4 highlights.json --output-dir highlight-clips --reencode
+```
+
+## Phase 2 Packaging
+
+Render platform-ready clips after the base export passes review:
+
+```bash
+python3 scripts/render_platform_clips.py highlights.json --input-dir highlight-clips --output-dir platform-clips --aspect vertical --dry-run
+```
+
+Generate visual review commands and a JSON report:
+
+```bash
+python3 scripts/analyze_visual_signals.py input.mp4 highlights.json --dry-run --json
+```
+
+Preview a compilation export:
+
+```bash
+python3 scripts/export_compilation.py highlights.json --input-dir highlight-clips --output highlight-compilation.mp4 --dry-run
+```
+
+Generate reviewable publishing metadata:
+
+```bash
+python3 scripts/generate_publish_assets.py highlights.json --platform Shorts --audience "target viewers"
 ```
 
 ## Clean Downloaded Captions

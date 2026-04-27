@@ -124,6 +124,17 @@ Read `references/highlight-schema.md` when creating or reviewing the highlight J
 
 Read `references/platform-presets.md` when the output needs vertical framing, burned subtitles, social captions, titles, summaries, or platform-specific packaging. Do not assume landscape no-subtitle clips are the final format when the user asks for social-ready assets.
 
+## Phase 2 Packaging
+
+After base clips pass validation, export, media verification, and production quality review, run only the packaging steps the user requested:
+
+- Use `python3 scripts/render_platform_clips.py <manifest.json> --input-dir highlight-clips --output-dir platform-clips --aspect vertical --dry-run` before producing vertical, square, landscape, or burned-subtitle variants.
+- Use `python3 scripts/analyze_visual_signals.py input.mp4 <manifest.json> --dry-run --json` to generate representative-frame and black-frame review commands when visual quality affects the decision.
+- Use `python3 scripts/export_compilation.py <manifest.json> --input-dir highlight-clips --output highlight-compilation.mp4 --dry-run` before creating a compilation video.
+- Use `python3 scripts/generate_publish_assets.py <manifest.json> --platform Shorts --audience "target viewers"` to create reviewable titles, descriptions, captions, hashtags, cover suggestions, and manual review items.
+
+Do not let packaging steps change the original cut decisions silently. If visual review, platform framing, subtitles, or publishing copy reveal a problem, update the manifest or report the risk before exporting final assets.
+
 ## Quality Review
 
 Read `references/quality-review.md` before calling exported clips final. Media validity is not the same as a good highlight package.
@@ -151,5 +162,9 @@ If cookies, tokens, browser profiles, auth headers, API keys, private keys, or e
 - `scripts/review_clip_boundaries.py` compares manifest cut points with VTT transcript cues and reports start or end cuts that land inside active speech.
 - `scripts/export_clips.py` reads a valid manifest and calls `ffmpeg` once per clip.
 - `scripts/clean_vtt.py` converts WebVTT captions to clean timestamped text lines for transcript review.
+- `scripts/render_platform_clips.py` renders existing clips into platform-specific aspect ratios and optional burned subtitles.
+- `scripts/analyze_visual_signals.py` generates representative-frame extraction and black-frame review commands for candidate clips.
+- `scripts/export_compilation.py` builds an `ffmpeg` concat workflow for highlight compilation videos.
+- `scripts/generate_publish_assets.py` creates reviewable social publishing metadata without uploading anything.
 - Default export uses stream copy for speed. Use `--reencode` for more accurate cuts or when stream copy produces playback issues.
 - If `ffmpeg` fails for one clip, report the failing clip id, command, and stderr summary before retrying.

@@ -9,6 +9,14 @@ Use this reference after media verification and before treating highlight clips 
 - For short-video delivery, verify landscape, vertical, crop, or reframing choices match the target platform.
 - Do not mix burned subtitles and no-subtitle clips unless the user explicitly requested mixed output.
 
+`scripts/analyze_visual_signals.py` can generate representative frame extraction commands and `blackdetect` scan commands for every manifest clip. Use the report as review evidence; do not treat it as a replacement for editorial judgment or transcript-based cut selection.
+
+## Compilation Review
+
+Use `scripts/export_compilation.py --dry-run` before creating a compilation. Confirm the clip order, concat list, output filename, and whether stream copy or re-encoding is appropriate.
+
+After export, verify the compilation has expected duration, video and audio streams, and a natural ending. If clips have mismatched codecs or dimensions, re-encode the compilation instead of relying on stream copy.
+
 ## Editorial Review
 
 - Confirm each clip has a hook, a complete idea, and a natural ending.
